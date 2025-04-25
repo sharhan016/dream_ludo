@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'controllers/game_controller.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    final GameController gameController = Get.put(GameController());
+    return GetMaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+          appBar: AppBar(
+            title: const Text('Dream Ludo'),
+          ),
+          body: Center(
+            child: ElevatedButton(
+              onPressed: () {
+                gameController.startGame();
+              },
+              child: const Text('Start Game'),
+            ),
+          )
       ),
     );
   }
