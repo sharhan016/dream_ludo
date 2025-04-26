@@ -31,33 +31,33 @@ class BoardWidget extends StatelessWidget {
                   );
                 }
               ),
-              Expanded(
+              const Expanded(
                 child: Stack(
                   children: [
-                    const Column(
+                     Column(
                       children: [
                         Expanded(
                           child: Row(
                             children: [
                               Expanded(
-                                child: Quadrant(color: Colors.blue),
+                                child: Quadrant(color: Colors.blue, index: 0,),
                               ),
                               Expanded(
-                                child: Quadrant(color: Colors.red),
+                                child: Quadrant(color: Colors.red, index: 1),
                               ),
                             ],
-                          ),
+                          ), 
                         ),
                         Expanded(
                           child: Row(
                             children: [
-                              Expanded(
-                                child: Quadrant(color: Colors.yellow),
+                              Expanded( 
+                                child: Quadrant(color: Colors.yellow, index: 2),
                               ),
-                              Expanded(
-                                child: Quadrant(color: Colors.green),
+                              Expanded( 
+                                child: Quadrant(color: Colors.green, index: 3),
                               ),
-                            ],
+                            ], 
                           ),
                         ),
                       ],
@@ -71,7 +71,7 @@ class BoardWidget extends StatelessWidget {
         ),
       ),
     );
-  }
+  } 
 }
 
 class CenterTriangles extends StatelessWidget {
@@ -117,7 +117,7 @@ class CenterTriangles extends StatelessWidget {
                 ],
               ),
             ),
-          ],
+          ], 
         ),
       ),
     );
@@ -126,38 +126,48 @@ class CenterTriangles extends StatelessWidget {
 
 class Quadrant extends StatelessWidget {
   final Color color;
-  const Quadrant({Key? key, required this.color}) : super(key: key);
+  final int index;
+  const Quadrant({Key? key, required this.color, required this.index})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final GameController gameController = Get.find();
 
-    return Container(
+    return Container( 
       color: color,
       child: Stack(
         children: [
-          Center(
-            child: Container(
-              width: MediaQuery.of(context).size.width / 5,
-              height: MediaQuery.of(context).size.width / 5,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: color.withOpacity(0.5),
-              ),
-            ),
-          ),
-          ...gameController.board.players.expand((player) => player.tokens.map((token) {
+          ...gameController.board.players.expand((player) =>
+              player.tokens.asMap().entries.map((entry) {
+                final int tokenIndex = entry.key;
+                final token = entry.value;
               if (token.color == color) {
+                double left = 0;
+                double top = 0;
+                if (tokenIndex == 0) {
+                  left = 10;
+                  top = 10;
+                } else if (tokenIndex == 1) { 
+                  left = 60;
+                  top = 10;
+                } else if (tokenIndex == 2) {
+                  left = 10;
+                  top = 60;
+                } else if (tokenIndex == 3) {
+                  left = 60;
+                  top = 60;
+                }
                 return Positioned(
-                  left: 10,
-                  top: 10,
+                  left: left,
+                  top: top,
                   child: TokenWidget(token: token,),
                 );
               } else {
                 return Container();
               }
             })).toList()
-        ],
+        ], 
       ),
     );
   }
