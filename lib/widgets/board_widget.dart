@@ -41,10 +41,10 @@ class BoardWidget extends StatelessWidget {
                             children: [
                               Expanded(
                                 child: Quadrant(color: Colors.blue, index: 0,),
-                              ),
+                              ),                                
                               Expanded(
                                 child: Quadrant(color: Colors.red, index: 1),
-                              ),
+                              ),                              
                             ],
                           ), 
                         ),
@@ -52,10 +52,10 @@ class BoardWidget extends StatelessWidget {
                           child: Row(
                             children: [
                               Expanded( 
-                                child: Quadrant(color: Colors.yellow, index: 2),
+                                child: Quadrant(color: Colors.yellow, index: 2),                              
                               ),
                               Expanded( 
-                                child: Quadrant(color: Colors.green, index: 3),
+                                child: Quadrant(color: Colors.green, index: 3),                                
                               ),
                             ], 
                           ),
@@ -133,53 +133,43 @@ class Quadrant extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GameController gameController = Get.find();
+      final screenWidth = MediaQuery.of(context).size.width;
+    final quadrantSize = screenWidth / 2.2;
+    final tokenSize = 40.0;
+    const tokenMargin = 20;
+    final tokenWithMargin = tokenSize + tokenMargin;
 
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final quadrantSize = constraints.maxWidth;
-          final tokenSize = 40;
-          final tokenMargin = 10;
-          final availableSpace = quadrantSize - (tokenMargin * 2);
-          final cellWidth = availableSpace / 2;
-          return Container(
-            color: color,
-            child: Stack(
-              children: [
-                ...gameController.board.players.expand((player) =>
-                    player.tokens.asMap().entries.map((entry) {
-                      final int tokenIndex = entry.key;
-                      final token = entry.value;
-                      if (token.color == color) {
-                        double left = 0;
-                        double top = 0;
-                        if (tokenIndex == 0) {
-                          left = tokenMargin.toDouble();
-                          top = tokenMargin.toDouble();
-                        } else if (tokenIndex == 1) {
-                          left = cellWidth + tokenMargin ;
-                          top = tokenMargin.toDouble();
-                        } else if (tokenIndex == 2) {
-                          left = tokenMargin.toDouble();
-                          top = cellWidth + tokenMargin;
-                        } else if (tokenIndex == 3) {
-                          left = cellWidth + tokenMargin;
-                          top = cellWidth + tokenMargin;
-                        }
-                        return Positioned(
-                          left: left,
-                          top: top,
-                          child: TokenWidget(token: token,),
-                        );
-                      } else {
-                        return Container();
-                      }
-                    })).toList()
-              ],
-            ),
-          );
-        },
+    return SizedBox(
+      width: quadrantSize,
+      height: quadrantSize,
+      child: Container(
+        color: color,
+        child: Stack(
+          children: [
+            ...gameController.board.players.expand((player) =>
+                player.tokens.asMap().entries.map((entry) {
+                  final int tokenIndex = entry.key;
+                  final token = entry.value;
+                  if (token.color == color) {
+                    double left = (tokenIndex % 2) * tokenWithMargin + tokenMargin;
+                    double top = (tokenIndex ~/ 2) * tokenWithMargin + tokenMargin;
+                    
+                    final centerOffsetX = (quadrantSize - (tokenSize + tokenMargin) * 2) / 2 ;
+                    final centerOffsetY = (quadrantSize - (tokenSize + tokenMargin) * 2) / 2 ;
+
+                    left += centerOffsetX;
+                    top += centerOffsetY;
+                    return Positioned(
+                      left: left,
+                      top: top,
+                      child: TokenWidget(token: token),
+                    );
+                  } else {
+                    return Container();
+                  }
+                })).toList()
+          ],
+        ),
       ),
     );
   }
