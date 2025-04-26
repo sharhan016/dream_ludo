@@ -6,11 +6,13 @@ import '../features/board/domain/usecases/initialize_tokens_usecase.dart';
 import 'package:flutter/material.dart';
 
 class GameController extends GetxController {
+  RxInt gameState = 0.obs;
   late Board board;
   late AddPlayerUseCase addPlayerUseCase;
   late InitializeTokensUseCase initializeTokensUseCase;
 
   void startGame() {
+    gameState.value = 1;
     board = Board(numberOfCells: 60, players: []);
     addPlayerUseCase = AddPlayerUseCase(board);
     List<Player> players = [
