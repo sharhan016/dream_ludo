@@ -1,8 +1,7 @@
-import 'package:dream_ludo/widgets/player_info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/game_controller.dart';
-import 'token_widget.dart';
+import 'player_info_widget.dart';
 
 class BoardWidget extends StatelessWidget {
   const BoardWidget({super.key});
@@ -14,56 +13,34 @@ class BoardWidget extends StatelessWidget {
         aspectRatio: 1.0,
         child: Container(
           decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/board_background.png'),
+              fit: BoxFit.cover,
+            ),
             border: Border.all(color: Colors.brown, width: 4),
+            borderRadius: BorderRadius.circular(20),
           ),
-          child: Column(
+          child: Stack(
             children: [
-              GetBuilder<GameController>(
-                builder: (controller) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ...controller.board.players.map((player) => PlayerInfoWidget(player: player)).toList(),
-                      ],
-                    ),
-                  );
-                }
-              ),
-              const Expanded(
-                child: Stack(
-                  children: [
-                     Column(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Quadrant(color: Colors.blue, index: 0,),
-                              ),                                
-                              Expanded(
-                                child: Quadrant(color: Colors.red, index: 1),
-                              ),                              
-                            ],
-                          ), 
+              _buildColoredGrid(),
+              _buildPathGrid(),
+              _buildHomeGrid(),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: GetBuilder<GameController>(
+                    builder: (controller) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            ...controller.board.players.map((player) => PlayerInfoWidget(player: player)).toList(),
+                          ],
                         ),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Expanded( 
-                                child: Quadrant(color: Colors.yellow, index: 2),                              
-                              ),
-                              Expanded( 
-                                child: Quadrant(color: Colors.green, index: 3),                                
-                              ),
-                            ], 
-                          ),
-                        ),
-                      ],
-                    ),
-                    const CenterTriangles()
-                  ],
+                      );
+                    }
                 ),
               ),
             ],
@@ -71,127 +48,151 @@ class BoardWidget extends StatelessWidget {
         ),
       ),
     );
-  } 
-}
+  }
 
-class CenterTriangles extends StatelessWidget {
-  const CenterTriangles({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width / 3,
-        height: MediaQuery.of(context).size.width / 3,
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomPaint(
-                      painter: TrianglePainter(Colors.blue),
-                    ),
-                  ),
-                  Expanded(
-                    child: CustomPaint(
-                      painter: TrianglePainter(Colors.red),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CustomPaint(
-                      painter: TrianglePainter(Colors.yellow),
-                    ),
-                  ),
-                  Expanded(
-                    child: CustomPaint(
-                      painter: TrianglePainter(Colors.green),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ], 
-        ),
+  Widget _buildColoredGrid() {
+    return GridView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 15,
       ),
+      itemCount: 15 * 15,
+      itemBuilder: (context, index) {
+        final row = index ~/ 15;
+        final col = index % 15;
+        Color? color;
+
+        if ((row < 6 && col < 6) || (row >= 9 && col < 6) || (row < 6 && col >= 9) || (row >= 9 && col >= 9)) {
+            if(row < 6 && col < 6){
+               color = Colors.blue.withOpacity(0.2);
+            }
+            if(row >= 9 && col < 6){
+              color = Colors.yellow.withOpacity(0.2);
+            }
+             if(row < 6 && col >= 9){
+              color = Colors.red.withOpacity(0.2);
+            }
+            if(row >= 9 && col >= 9){
+              color = Colors.green.withOpacity(0.2);
+            }
+        }
+
+        if(row == 7 || col == 7){
+           color = Colors.white.withOpacity(0.2);
+        }
+
+
+        return Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            color: color,
+            border: Border.all(color: Colors.black.withOpacity(0.2)),
+          ),
+        );
+      },
     );
   }
-}
 
-class Quadrant extends StatelessWidget {
-  final Color color;
-  final int index;
-  const Quadrant({Key? key, required this.color, required this.index})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final GameController gameController = Get.find();
-      final screenWidth = MediaQuery.of(context).size.width;
-    final quadrantSize = screenWidth / 2.2;
-    final tokenSize = 40.0;
-    const tokenMargin = 20;
-    final tokenWithMargin = tokenSize + tokenMargin;
-
-    return SizedBox(
-      width: quadrantSize,
-      height: quadrantSize,
-      child: Container(
-        color: color,
-        child: Stack(
-          children: [
-            ...gameController.board.players.expand((player) =>
-                player.tokens.asMap().entries.map((entry) {
-                  final int tokenIndex = entry.key;
-                  final token = entry.value;
-                  if (token.color == color) {
-                    double left = (tokenIndex % 2) * tokenWithMargin + tokenMargin;
-                    double top = (tokenIndex ~/ 2) * tokenWithMargin + tokenMargin;
-                    
-                    final centerOffsetX = (quadrantSize - (tokenSize + tokenMargin) * 2) / 2 ;
-                    final centerOffsetY = (quadrantSize - (tokenSize + tokenMargin) * 2) / 2 ;
-
-                    left += centerOffsetX;
-                    top += centerOffsetY;
-                    return Positioned(
-                      left: left,
-                      top: top,
-                      child: TokenWidget(token: token),
-                    );
-                  } else {
-                    return Container();
-                  }
-                })).toList()
-          ],
-        ),
+  Widget _buildPathGrid() {
+    return GridView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 15,
       ),
+      itemCount: 15 * 15,
+      itemBuilder: (context, index) {
+        final row = index ~/ 15;
+        final col = index % 15;
+        Color? color;
+
+        if (row == 0 && (col >= 1 && col <= 5)) {
+          color = Colors.white; // Top
+        }
+        if (row >= 1 && row <= 5 && col == 6) {
+          color = Colors.white;
+        }
+         if (row == 6 && (col >= 1 && col <= 5)) {
+          color = Colors.white;
+        }
+        if (row >= 1 && row <= 5 && col == 0) {
+          color = Colors.white; // left
+        }
+         if (row == 14 && (col >= 9 && col <= 13)) {
+          color = Colors.white; // down
+        }
+         if (row >= 9 && row <= 13 && col == 8) {
+          color = Colors.white; 
+        }
+        if (row == 8 && (col >= 9 && col <= 13)) {
+          color = Colors.white; // right
+        }
+         if (row >= 9 && row <= 13 && col == 14) {
+          color = Colors.white;
+        }
+
+        if (row == 0 && col == 6) {
+          color = Colors.blue;
+        }
+
+        if (row == 6 && col == 0) {
+          color = Colors.yellow;
+        }
+
+        if (row == 8 && col == 14) {
+          color = Colors.green;
+        }
+
+         if (row == 14 && col == 8) {
+          color = Colors.red;
+        }
+
+
+
+        return Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            color: color,
+            border: Border.all(color: Colors.black.withOpacity(0.2)),
+          ),
+        );
+      },
     );
   }
-}
 
-class TrianglePainter extends CustomPainter {
-  final Color color;
-  TrianglePainter(this.color);
-  @override
-  void paint(Canvas canvas, Size size) {
-    var paint = Paint()..color = color;
+  Widget _buildHomeGrid() {
+    return GridView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 15,
+      ),
+      itemCount: 15 * 15,
+      itemBuilder: (context, index) {
+        final row = index ~/ 15;
+        final col = index % 15;
+        Color? color;
 
-    var path = Path();
-    path.moveTo(size.width / 2, 0);
-    path.lineTo(0, size.height);
-    path.lineTo(size.width, size.height);
-    path.close();
-    canvas.drawPath(path, paint);
-  }
+        if (row < 6 && col < 6) {
+          color = Colors.blue.withOpacity(0.5);
+        } else if (row < 6 && col >= 9) {
+          color = Colors.red.withOpacity(0.5);
+        } else if (row >= 9 && col < 6) {
+          color = Colors.yellow.withOpacity(0.5);
+        } else if (row >= 9 && col >= 9) {
+          color = Colors.green.withOpacity(0.5);
+        }
 
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return false;
+
+        return Container(
+          width: 110,
+          height: 110,
+          decoration: BoxDecoration(
+            color: color,
+            border: Border.all(color: Colors.black.withOpacity(0.2)),
+          ),
+        );
+      },
+    );
   }
 }
