@@ -1,0 +1,2 @@
+/Users/sharhan/Projects/dream_ludo/android/app/.cxx/RelWithDebInfo/2ic5e615/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/sharhan/Projects/dream_ludo/android/app/.cxx/RelWithDebInfo/2ic5e615/armeabi-v7a/CMakeFiles/rebuild_cache.dir
