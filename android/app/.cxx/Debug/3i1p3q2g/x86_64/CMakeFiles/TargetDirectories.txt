@@ -1,0 +1,2 @@
+/Users/sharhan/Projects/dream_ludo/android/app/.cxx/Debug/3i1p3q2g/x86_64/CMakeFiles/edit_cache.dir
+/Users/sharhan/Projects/dream_ludo/android/app/.cxx/Debug/3i1p3q2g/x86_64/CMakeFiles/rebuild_cache.dir
