@@ -134,40 +134,52 @@ class Quadrant extends StatelessWidget {
   Widget build(BuildContext context) {
     final GameController gameController = Get.find();
 
-    return Container( 
-      color: color,
-      child: Stack(
-        children: [
-          ...gameController.board.players.expand((player) =>
-              player.tokens.asMap().entries.map((entry) {
-                final int tokenIndex = entry.key;
-                final token = entry.value;
-              if (token.color == color) {
-                double left = 0;
-                double top = 0;
-                if (tokenIndex == 0) {
-                  left = 10;
-                  top = 10;
-                } else if (tokenIndex == 1) { 
-                  left = 60;
-                  top = 10;
-                } else if (tokenIndex == 2) {
-                  left = 10;
-                  top = 60;
-                } else if (tokenIndex == 3) {
-                  left = 60;
-                  top = 60;
-                }
-                return Positioned(
-                  left: left,
-                  top: top,
-                  child: TokenWidget(token: token,),
-                );
-              } else {
-                return Container();
-              }
-            })).toList()
-        ], 
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final quadrantSize = constraints.maxWidth;
+          final tokenSize = 40;
+          final tokenMargin = 10;
+          final availableSpace = quadrantSize - (tokenMargin * 2);
+          final cellWidth = availableSpace / 2;
+          return Container(
+            color: color,
+            child: Stack(
+              children: [
+                ...gameController.board.players.expand((player) =>
+                    player.tokens.asMap().entries.map((entry) {
+                      final int tokenIndex = entry.key;
+                      final token = entry.value;
+                      if (token.color == color) {
+                        double left = 0;
+                        double top = 0;
+                        if (tokenIndex == 0) {
+                          left = tokenMargin.toDouble();
+                          top = tokenMargin.toDouble();
+                        } else if (tokenIndex == 1) {
+                          left = cellWidth + tokenMargin ;
+                          top = tokenMargin.toDouble();
+                        } else if (tokenIndex == 2) {
+                          left = tokenMargin.toDouble();
+                          top = cellWidth + tokenMargin;
+                        } else if (tokenIndex == 3) {
+                          left = cellWidth + tokenMargin;
+                          top = cellWidth + tokenMargin;
+                        }
+                        return Positioned(
+                          left: left,
+                          top: top,
+                          child: TokenWidget(token: token,),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    })).toList()
+              ],
+            ),
+          );
+        },
       ),
     );
   }

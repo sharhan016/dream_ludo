@@ -16,9 +16,10 @@ class TokenWidget extends StatelessWidget {
         color: token.color,
       ),
       child: Center(
-        child: Text(
-          token.id,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        child: Icon(
+          Icons.circle,
+          color: Colors.white,
+          size: 20,
         ),
       ),
     );
