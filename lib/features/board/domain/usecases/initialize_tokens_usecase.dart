@@ -2,11 +2,8 @@ import '../entities/player.dart';
 import '../entities/token.dart';
 
 class InitializeTokensUseCase {
-  final Player player;
-
-  InitializeTokensUseCase(this.player);
-
-  void call() {
+  void call(Player player) {
+    
     for (int i = 1; i <= 4; i++) {
       Token token = Token(
         color: player.color,

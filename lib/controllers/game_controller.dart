@@ -11,23 +11,25 @@ class GameController extends GetxController {
   late AddPlayerUseCase addPlayerUseCase;
   late InitializeTokensUseCase initializeTokensUseCase;
 
-  void startGame() {
-    gameState.value = 1;
+ @override
+  void onInit() {
+    super.onInit();
     board = Board(numberOfCells: 60, players: []);
     addPlayerUseCase = AddPlayerUseCase(board);
-    List<Player> players = [
-      Player(color: Colors.red, name: "Player 1", tokens: []),
-      Player(color: Colors.green, name: "Player 2", tokens: []),
-      Player(color: Colors.blue, name: "Player 3", tokens: []),
-      Player(color: Colors.yellow, name: "Player 4", tokens: []),
-    ];
+  }
 
+  void startGame() {
+    List<Player> players = [
+        Player(color: Colors.red, name: "Player 1", tokens: []),
+        Player(color: Colors.green, name: "Player 2", tokens: []),
+        Player(color: Colors.blue, name: "Player 3", tokens: []),
+        Player(color: Colors.yellow, name: "Player 4", tokens: []),
+      ];
+    initializeTokensUseCase = InitializeTokensUseCase();
     for (var player in players) {
       addPlayerUseCase(player);
+      initializeTokensUseCase(player);
     }
-    for(var player in board.players){
-      initializeTokensUseCase = InitializeTokensUseCase(player);
-      initializeTokensUseCase();
-    }
+    gameState.value = 1;
   }
 }
