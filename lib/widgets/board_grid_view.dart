@@ -25,24 +25,6 @@ class BoardWidget extends StatelessWidget {
               _buildColoredGrid(),
               _buildPathGrid(),
               _buildHomeGrid(),
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: GetBuilder<GameController>(
-                    builder: (controller) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            ...controller.board.players.map((player) => PlayerInfoWidget(player: player)).toList(),
-                          ],
-                        ),
-                      );
-                    }
-                ),
-              ),
             ],
           ),
         ),
@@ -62,25 +44,27 @@ class BoardWidget extends StatelessWidget {
         final col = index % 15;
         Color? color;
 
-        if ((row < 6 && col < 6) || (row >= 9 && col < 6) || (row < 6 && col >= 9) || (row >= 9 && col >= 9)) {
-            if(row < 6 && col < 6){
-               color = Colors.blue.withOpacity(0.2);
-            }
-            if(row >= 9 && col < 6){
-              color = Colors.yellow.withOpacity(0.2);
-            }
-             if(row < 6 && col >= 9){
-              color = Colors.red.withOpacity(0.2);
-            }
-            if(row >= 9 && col >= 9){
-              color = Colors.green.withOpacity(0.2);
-            }
+        if ((row < 6 && col < 6) ||
+            (row >= 9 && col < 6) ||
+            (row < 6 && col >= 9) ||
+            (row >= 9 && col >= 9)) {
+          if (row < 6 && col < 6) {
+            color = Colors.blue.withOpacity(0.2);
+          }
+          if (row >= 9 && col < 6) {
+            color = Colors.yellow.withOpacity(0.2);
+          }
+          if (row < 6 && col >= 9) {
+            color = Colors.red.withOpacity(0.2);
+          }
+          if (row >= 9 && col >= 9) {
+            color = Colors.green.withOpacity(0.2);
+          }
         }
 
-        if(row == 7 || col == 7){
-           color = Colors.white.withOpacity(0.2);
+        if (row == 7 || col == 7) {
+          color = Colors.white.withOpacity(0.2);
         }
-
 
         return Container(
           width: 30,
@@ -112,22 +96,22 @@ class BoardWidget extends StatelessWidget {
         if (row >= 1 && row <= 5 && col == 6) {
           color = Colors.white;
         }
-         if (row == 6 && (col >= 1 && col <= 5)) {
+        if (row == 6 && (col >= 1 && col <= 5)) {
           color = Colors.white;
         }
         if (row >= 1 && row <= 5 && col == 0) {
           color = Colors.white; // left
         }
-         if (row == 14 && (col >= 9 && col <= 13)) {
+        if (row == 14 && (col >= 9 && col <= 13)) {
           color = Colors.white; // down
         }
-         if (row >= 9 && row <= 13 && col == 8) {
-          color = Colors.white; 
+        if (row >= 9 && row <= 13 && col == 8) {
+          color = Colors.white;
         }
         if (row == 8 && (col >= 9 && col <= 13)) {
           color = Colors.white; // right
         }
-         if (row >= 9 && row <= 13 && col == 14) {
+        if (row >= 9 && row <= 13 && col == 14) {
           color = Colors.white;
         }
 
@@ -143,11 +127,9 @@ class BoardWidget extends StatelessWidget {
           color = Colors.green;
         }
 
-         if (row == 14 && col == 8) {
+        if (row == 14 && col == 8) {
           color = Colors.red;
         }
-
-
 
         return Container(
           width: 30,
@@ -172,23 +154,28 @@ class BoardWidget extends StatelessWidget {
         final row = index ~/ 15;
         final col = index % 15;
         Color? color;
+        String assetName = "";
 
         if (row < 6 && col < 6) {
           color = Colors.blue.withOpacity(0.5);
+          assetName = "assets/path-blue.png";
         } else if (row < 6 && col >= 9) {
           color = Colors.red.withOpacity(0.5);
+          assetName = "assets/path-red.png";
         } else if (row >= 9 && col < 6) {
           color = Colors.yellow.withOpacity(0.5);
+          assetName = "assets/path-yellow.png";
         } else if (row >= 9 && col >= 9) {
           color = Colors.green.withOpacity(0.5);
+          assetName = "assets/path-green.png";
         }
-
 
         return Container(
           width: 110,
           height: 110,
           decoration: BoxDecoration(
-            color: color,
+            // color: color,
+            image: DecorationImage(image: AssetImage(assetName)),
             border: Border.all(color: Colors.black.withOpacity(0.2)),
           ),
         );
